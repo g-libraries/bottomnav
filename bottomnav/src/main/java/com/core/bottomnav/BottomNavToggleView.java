@@ -10,6 +10,7 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -332,6 +333,7 @@ public class BottomNavToggleView extends RelativeLayout {
 
         isActive = true;
         titleView.setVisibility(VISIBLE);
+        setLayerType(View.LAYER_TYPE_HARDWARE, null);
         ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
         animator.setDuration(animationDuration);
         animator.addUpdateListener(animation -> {
@@ -339,7 +341,7 @@ public class BottomNavToggleView extends RelativeLayout {
             titleView.setWidth((int) (measuredTitleWidth * value));
             //end of animation
             if (value >= 1.0f) {
-                //do something
+                setLayerType(View.LAYER_TYPE_NONE, null);
             }
         });
         animator.start();
@@ -390,13 +392,16 @@ public class BottomNavToggleView extends RelativeLayout {
 
         isActive = false;
         ValueAnimator animator = ValueAnimator.ofFloat(1f, 0f);
+        setLayerType(View.LAYER_TYPE_HARDWARE, null);
         animator.setDuration(animationDuration);
         animator.addUpdateListener(animation -> {
             float value = (float) animation.getAnimatedValue();
             titleView.setWidth((int) (measuredTitleWidth * value));
             //end of animation
-            if (value <= 0.0f)
+            if (value <= 0.0f) {
                 titleView.setVisibility(GONE);
+                setLayerType(View.LAYER_TYPE_NONE, null);
+            }
         });
         animator.start();
 
