@@ -87,6 +87,25 @@ public class BottomNavConstraintView extends ConstraintLayout implements IBottom
     }
 
     /////////////////////////////////////////
+    // CURRENT ITEM SETTER
+    /////////////////////////////////////////
+    public Boolean setCurrentItem(int position) {
+        if (position < 0 || position == currentActiveItemPosition) {
+            return false;
+        }
+        BottomNavToggleView currentActiveToggleView = bottomNavItems.get(currentActiveItemPosition);
+        BottomNavToggleView newActiveToggleView = bottomNavItems.get(position);
+        if (currentActiveToggleView != null)
+            currentActiveToggleView.toggle();
+        if (newActiveToggleView != null)
+            newActiveToggleView.toggle();
+
+        //changed the current active position
+        currentActiveItemPosition = position;
+        return true;
+    }
+
+    /////////////////////////////////////////
     // CLICK LISTENER
     /////////////////////////////////////////
     OneClickNavigationListener clickListener = new OneClickNavigationListener() {
@@ -94,25 +113,11 @@ public class BottomNavConstraintView extends ConstraintLayout implements IBottom
         public void onOneClick(View v) {
 
             int changedPosition = getItemPositionById(v.getId());
-            if (changedPosition >= 0) {
-                if (changedPosition == currentActiveItemPosition) {
-                    return;
-                }
-                BottomNavToggleView currentActiveToggleView = bottomNavItems.get(currentActiveItemPosition);
-                BottomNavToggleView newActiveToggleView = bottomNavItems.get(changedPosition);
-                if (currentActiveToggleView != null)
-                    currentActiveToggleView.toggle();
-                if (newActiveToggleView != null)
-                    newActiveToggleView.toggle();
 
-                //changed the current active position
-                currentActiveItemPosition = changedPosition;
-
-                if (navigationChangeListener != null)
-                    navigationChangeListener.onNavigationChanged(v, currentActiveItemPosition);
-            } else {
-                Log.w(TAG, "Selected id not found! Cannot toggle");
-            }
+            if (setCurrentItem(changedPosition) && navigationChangeListener != null)
+                navigationChangeListener.onNavigationChanged(v, currentActiveItemPosition);
+            else
+                Log.w(TAG, "Error! Cannot toggle");
         }
     };
 
